@@ -54,9 +54,20 @@ def calculatePosition(l1, l2, l3, finalPosition):
     secondPoint1 = Point(secondPoints[0], secondPoints[1])
     secondPoint2 = Point(secondPoints[2], secondPoints[3])
 
+    if (secondPoint1.y < 0):
+      secondPoint1 = secondPoint2
+      if (secondPoint2.y < 0):
+        return None
+      
+    elif secondPoint2.y < 0:
+      secondPoint2 = secondPoint1
+      if (secondPoint1.y < 0):
+        return None
+
 
     secondAngle1 = math.asin((thirdJoint.y - secondPoint1.y) / l2)
     secondAngle2 = math.asin((thirdJoint.y - secondPoint2.y) / l2)
+
 
     if thirdJoint.x - secondPoint1.x < 0:
       secondAngle1 = math.pi - abs(secondAngle1)
@@ -127,9 +138,9 @@ if __name__ == "__main__":
   finalPosition3 = FinalPosition(0.2, 0.6, math.pi/4)
 
   # best
-  l1 = 1.12
-  l2 = 1.73
-  l3 = 1.35
+  l1 = .80
+  l2 = 1.75
+  l3 = 1.75
 
   armSetups1 = calculatePosition(l1, l2, l3, finalPosition1)
   armSetups2 = calculatePosition(l1, l2, l3, finalPosition2)
