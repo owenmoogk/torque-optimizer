@@ -43,39 +43,41 @@ class Point:
 
 # calculate the dimensions of an arm
 def calculatePosition(l1, l2, l3, finalPosition):
-  thirdJoint = Point(finalPosition.x - math.cos(finalPosition.angle), finalPosition.y - math.sin(finalPosition.angle))
+  try:
+    thirdJoint = Point(finalPosition.x - (math.cos(finalPosition.angle) * l3), finalPosition.y - (math.sin(finalPosition.angle) * l3))
 
-  secondPoints = get_intersections(thirdJoint.x, thirdJoint.y, l2, 0, 0, l1)
+    secondPoints = get_intersections(thirdJoint.x, thirdJoint.y, l2, 0, 0, l1)
 
-  if len(secondPoints) != 4:
+    if len(secondPoints) != 4:
+      return None
+
+    secondPoint1 = Point(secondPoints[0], secondPoints[1])
+    secondPoint2 = Point(secondPoints[2], secondPoints[3])
+
+
+    secondAngle1 = math.asin((thirdJoint.y - secondPoint1.y) / l2)
+    secondAngle2 = math.asin((thirdJoint.y - secondPoint2.y) / l2)
+
+    if thirdJoint.x - secondPoint1.x < 0:
+      secondAngle1 = math.pi - abs(secondAngle1)
+
+    if thirdJoint.x - secondPoint2.x < 0:
+      secondAngle2 = math.pi - abs(secondAngle2)
+
+    firstAngle1 = math.asin((secondPoint1.y - 0) / l1)
+    firstAngle2 = math.asin((secondPoint2.y - 0) / l1)
+
+    if secondPoint1.x < 0:
+      firstAngle1 = math.pi - abs(firstAngle1)
+      
+    if secondPoint2.x < 0:
+      firstAngle2 = math.pi - abs(firstAngle2)
+
+    angle3 = finalPosition.angle
+
+    return [ArmSetup(l1, l2, l3, firstAngle1, secondAngle1, angle3), ArmSetup(l1, l2, l3, firstAngle2, secondAngle2, angle3)]
+  except:
     return None
-
-  secondPoint1 = Point(secondPoints[0], secondPoints[1])
-  secondPoint2 = Point(secondPoints[2], secondPoints[3])
-
-  # print(secondPoint1.x, secondPoint1.y)
-
-  secondAngle1 = math.asin((thirdJoint.y - secondPoint1.y) / l2)
-  secondAngle2 = math.asin((thirdJoint.y - secondPoint2.y) / l2)
-
-  if thirdJoint.x - secondPoint1.x < 0:
-    secondAngle1 = math.pi - abs(secondAngle1)
-
-  if thirdJoint.x - secondPoint2.x < 0:
-    secondAngle2 = math.pi - abs(secondAngle2)
-
-  firstAngle1 = math.asin((secondPoint1.y - 0) / l1)
-  firstAngle2 = math.asin((secondPoint2.y - 0) / l1)
-
-  if secondPoint1.x < 0:
-    firstAngle1 = math.pi - abs(firstAngle1)
-    
-  if secondPoint2.x < 0:
-    firstAngle2 = math.pi - abs(firstAngle2)
-
-  angle3 = finalPosition.angle
-
-  return [ArmSetup(l1, l2, l3, firstAngle1, secondAngle1, angle3), ArmSetup(l1, l2, l3, firstAngle2, secondAngle2, angle3)]
 
 
 def calculateBestLengths():
@@ -89,9 +91,9 @@ def calculateBestLengths():
   smallestT = float('inf')
   bestArmSetup = []
 
-  for l1 in range (1, 130):
-    for l2 in range (1, 130):
-        for l3 in range (1, 130):
+  for l1 in range (1, 200):
+    for l2 in range (1, 200):
+        for l3 in range (1, 200):
             
             if (l1/100 + l2/100 + l3/100 < 1):
               continue
@@ -118,41 +120,41 @@ def calculateBestLengths():
   print(smallestT)
 
 if __name__ == "__main__":
-  calculateBestLengths()
+  # calculateBestLengths()
 
-  # finalPosition1 = FinalPosition(0.75, 0.1, -math.pi/3)
-  # finalPosition2 = FinalPosition(0.5, 0.5,0)
-  # finalPosition3 = FinalPosition(0.2, 0.6, math.pi/4)
+  finalPosition1 = FinalPosition(0.75, 0.1, -math.pi/3)
+  finalPosition2 = FinalPosition(0.5, 0.5,0)
+  finalPosition3 = FinalPosition(0.2, 0.6, math.pi/4)
 
-  # # best
-  # l1 = .79
-  # l2 = 1.29
-  # l3 = .24
+  # best
+  l1 = 1.12
+  l2 = 1.73
+  l3 = 1.35
 
-  # armSetups1 = calculatePosition(l1, l2, l3, finalPosition1)
-  # armSetups2 = calculatePosition(l1, l2, l3, finalPosition2)
-  # armSetups3 = calculatePosition(l1, l2, l3, finalPosition3)
+  armSetups1 = calculatePosition(l1, l2, l3, finalPosition1)
+  armSetups2 = calculatePosition(l1, l2, l3, finalPosition2)
+  armSetups3 = calculatePosition(l1, l2, l3, finalPosition3)
 
-  # t1 = min(abs(armSetups1[0].calculateTorque()), abs(armSetups1[1].calculateTorque()))
-  # t2 = min(abs(armSetups2[0].calculateTorque()), abs(armSetups2[1].calculateTorque()))
-  # t3 = min(abs(armSetups3[0].calculateTorque()), abs(armSetups3[1].calculateTorque()))
+  t1 = min(abs(armSetups1[0].calculateTorque()), abs(armSetups1[1].calculateTorque()))
+  t2 = min(abs(armSetups2[0].calculateTorque()), abs(armSetups2[1].calculateTorque()))
+  t3 = min(abs(armSetups3[0].calculateTorque()), abs(armSetups3[1].calculateTorque()))
   
-  # armSetups1[0].print()
-  # print(armSetups1[0].calculateTorque())
-  # armSetups1[1].print()
-  # print(armSetups1[1].calculateTorque())
-  # print()
-  # armSetups2[0].print()
-  # print(armSetups2[0].calculateTorque())
-  # armSetups2[1].print()
-  # print(armSetups2[1].calculateTorque())
-  # print()
-  # armSetups3[0].print()
-  # print(armSetups3[0].calculateTorque())
-  # armSetups3[1].print()
-  # print(armSetups3[1].calculateTorque())
+  armSetups1[0].print()
+  print(armSetups1[0].calculateTorque())
+  armSetups1[1].print()
+  print(armSetups1[1].calculateTorque())
+  print()
+  armSetups2[0].print()
+  print(armSetups2[0].calculateTorque())
+  armSetups2[1].print()
+  print(armSetups2[1].calculateTorque())
+  print()
+  armSetups3[0].print()
+  print(armSetups3[0].calculateTorque())
+  armSetups3[1].print()
+  print(armSetups3[1].calculateTorque())
 
-  # print(t1, t2, t3)
+  print(t1, t2, t3)
 
-  # t = math.sqrt(t1**2 + t2**2 + t3**2)
-  # print(t)
+  t = math.sqrt(t1**2 + t2**2 + t3**2)
+  print(t)
